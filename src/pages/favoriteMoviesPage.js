@@ -1,50 +1,52 @@
-import React, { useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import PageTemplate from "../components/templateMovieListPage";
 import { MoviesContext } from "../contexts/moviesContext";
 import { useQueries } from "react-query";
 import { getMovie } from "../api/tmdb-api";
-import Spinner from '../components/spinner'
+import Spinner from "../components/spinner";
 import RemoveFromFavorites from "../components/cardIcons/removeFromFavorites";
 import WriteReview from "../components/cardIcons/writeReview";
 
 const FavoriteMoviesPage = () => {
-  const { favorites: movieIds } = useContext(MoviesContext);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [loading, setLoading] = useState(true);
+  const { favorites } = useContext(MoviesContext);
 
-  // Create an array of queries and run in parallel.
-  const favoriteMovieQueries = useQueries(
-    movieIds.map((movieId) => {
-      return {
-        queryKey: ["movie", { id: movieId }],
-        queryFn: getMovie,
-      };
-    })
-  );
-  // Check if any of the parallel queries is still loading.
-  const isLoading = favoriteMovieQueries.find((m) => m.isLoading === true);
+  const movieQueries = favorites.map((id) => ({
+    queryKey: ['movie', { id }],
+    queryFn: getMovie,
+  }));
 
-  if (isLoading) {
+  const results = useQueries(movieQueries);
+  const isLoading = results.some((query) => query.isLoading);
+
+  useEffect(() => {
+    setLoading(isLoading);
+  }, [isLoading]);
+
+  const movies = results.map((query) => query.data).filter(Boolean);
+
+  const handlePageChange = (event, value) => {
+    setCurrentPage(value);
+  };
+
+  if (loading) {
     return <Spinner />;
   }
-
-  const movies = favoriteMovieQueries.map((q) => {
-    q.data.genre_ids = q.data.genres.map(g => g.id)
-    return q.data
-  });
-
-  const toDo = () => true;
 
   return (
     <PageTemplate
       title="Favorite Movies"
       movies={movies}
-      action={(movie) => {
-        return (
-          <>
-            <RemoveFromFavorites movie={movie} />
-            <WriteReview movie={movie} />
-          </>
-        );
-      }}
+      page={currentPage}
+      totalPage={1} 
+      getPage={handlePageChange}
+      action={(movie) => (
+        <>
+          <RemoveFromFavorites movie={movie} />
+          <WriteReview movie={movie} />
+        </>
+      )}
     />
   );
 };

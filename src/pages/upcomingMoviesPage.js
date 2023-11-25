@@ -1,40 +1,41 @@
-import React, { useContext } from "react";
-import PageTemplate from '../components/templateMovieListPage'
+import React, { useState } from "react";
+import PageTemplate from "../components/templateMovieListPage";
 import { getUpcomingMovies } from "../api/tmdb-api";
-import PlaylistAddIcon from '@mui/icons-material/PlaylistAdd';
-import { useQuery } from 'react-query';
-import Spinner from '../components/spinner';
-import { MoviesContext } from "../contexts/moviesContext";
+import AddToMustWatchIcon from "../components/cardIcons/addToMustWatchIcon";
+import { useQuery } from "react-query";
+import Spinner from "../components/spinner";
 
 const UpcomingMoviesPage = () => {
-    const { data, error, isLoading, isError } = useQuery('discover', getUpcomingMovies)
-    const { addToMustWatch } = useContext(MoviesContext);
-    if (isLoading) {
-        return <Spinner />
-    }
-    if (isError) {
-        return <h1>{error.message}</h1>;
-    }
-    const movies = data.results;
+  const [ page, setPage] = useState(1); 
 
-    const handleAddToMustWatch = (movie) => {
-        addToMustWatch(movie);
-    };
+  const fetchUpcomingMovies = () => getUpcomingMovies( page);
+  const movieQuery = useQuery(['upcoming',  page], fetchUpcomingMovies);
 
+  if (movieQuery.isLoading) {
+    return <Spinner />;
+  }
 
-    return (
-        <PageTemplate
-            title="Upcoming Movies"
-            movies={movies}
-            action={(movie) => {
-                return (
-                    <PlaylistAddIcon
-                        onClick={() => handleAddToMustWatch(movie)}
-                    />
-                );
-            }}
-        />
-    );
+  if (movieQuery.isError) {
+    return <h1>Error: {movieQuery.error.message}</h1>;
+  }
+
+  const movies = movieQuery.data.results;
+  const totalPage = Math.min(movieQuery.data.total_pages, 500);
+
+  const handlePageChange = (page) => {
+    setPage(page);  
+  };
+
+  return (
+    <PageTemplate
+      title="Upcoming Movies"
+      movies={movies}
+      page={page} 
+      totalPage={totalPage}
+      getPage={handlePageChange}
+      action={(movie) => <AddToMustWatchIcon movie={movie} />}
+    />
+  );
 };
 
 export default UpcomingMoviesPage;

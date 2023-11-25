@@ -1,39 +1,38 @@
 import React from "react";
 import { useParams } from 'react-router-dom';
-import MovieDetails from "../components/movieDetails/";
 import PageTemplate from "../components/templateMoviePage";
-import { getMovie } from '../api/tmdb-api'
+import MovieDetails from "../components/movieDetails/";
+import { getMovie, getMovieCredits, getSimilarMovies } from '../api/tmdb-api'
 import { useQuery } from "react-query";
 import Spinner from '../components/spinner'
-// import useMovie from "../hooks/useMovie";   Redundant
 
-const MoviePage = (props) => {
+const MoviePage = () => {
   const { id } = useParams();
-  const { data: movie, error, isLoading, isError } = useQuery(
-    ["movie", { id: id }],
-    getMovie
-  );
+  
+  const movieQuery = useQuery(["movie", { id }], getMovie);
+  const actorsQuery = useQuery(["actors", { id }], getMovieCredits);
+  const similarMoviesQuery = useQuery(["similarMovies", { id }], getSimilarMovies);
 
-  if (isLoading) {
+  if (movieQuery.isLoading || actorsQuery.isLoading || similarMoviesQuery.isLoading) {
     return <Spinner />;
   }
 
-  if (isError) {
-    return <h1>{error.message}</h1>;
+  if (movieQuery.isError) {
+    return <h1>Error: {movieQuery.error.message}</h1>;
+  }
+
+  if (actorsQuery.isError) {
+    return <h1>Error: {actorsQuery.error.message}</h1>;
+  }
+
+  if (similarMoviesQuery.isError) {
+    return <h1>Error: {similarMoviesQuery.error.message}</h1>;
   }
 
   return (
-    <>
-      {movie ? (
-        <>
-          <PageTemplate movie={movie}>
-            <MovieDetails movie={movie} />
-          </PageTemplate>
-        </>
-      ) : (
-        <p>Waiting for movie details</p>
-      )}
-    </>
+    <PageTemplate movie={movieQuery.data}>
+      <MovieDetails movie={movieQuery.data} actors={actorsQuery.data} similarMovies={similarMoviesQuery.data} />
+    </PageTemplate>
   );
 };
 
