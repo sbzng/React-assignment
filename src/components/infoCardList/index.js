@@ -1,5 +1,5 @@
 import React from "react";
-import MovieEntry from "../movieEntry";
+import InfoCard from "../infoCard";
 import { Grid } from "@mui/material";
 
 const InfoCardList = ({ movies, action }) => {
@@ -7,7 +7,7 @@ const InfoCardList = ({ movies, action }) => {
     <Grid container spacing={2}>
       {movies.map((m) => (
         <Grid item xs={12} key={m.id}>
-          <MovieEntry movie={m} action={action} />
+          <InfoCard movie={m} action={action} />
         </Grid>
       ))}
     </Grid>

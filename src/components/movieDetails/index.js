@@ -12,7 +12,7 @@ import Drawer from "@mui/material/Drawer";
 import Avatar from "@mui/material/Avatar";
 import MovieReviews from "../movieReviews";
 import { Link as RouterLink } from "react-router-dom";
-import MovieEntryList from "../movieEntryList";
+import InfoCardList from "../infoCardList";
 
 const profilePathRoot = "https://image.tmdb.org/t/p/w300";
 
@@ -122,7 +122,7 @@ const MovieDetails = ({ movie, actors, similarMovies }) => {
         Similar Movies
       </Typography>
       <Paper sx={{ overflowX: 'auto', p: 2, display: 'flex' }}>
-        <MovieEntryList movies={similarMovies.results} action={null} />
+        <InfoCardList movies={similarMovies.results} action={null} />
       </Paper>
 
       <Fab color="secondary" variant="extended" onClick={() => setDrawerOpen(true)} sx={{ position: "fixed", bottom: "1em", right: "1em" }}>

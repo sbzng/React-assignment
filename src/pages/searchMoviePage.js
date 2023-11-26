@@ -72,4 +72,3 @@ const SearchMoviePage = () => {
 
 export default SearchMoviePage;
 
-s

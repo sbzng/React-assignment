@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useParams } from "react-router-dom";
 import PageTemplate from "../components/templateMovieListPage";
 import { getTrendingMovies } from "../api/tmdb-api";
-import AddToMustWatchIcon from "../components/cardIcons/addToMustWatchIcon";
+import AddToMustWatch from "../components/cardIcons/addToMustWatch";
 import { useQuery } from "react-query";
 import Spinner from "../components/spinner";
 
@@ -37,7 +37,7 @@ const TrendingMoviesPage = () => {
       page={currentPage}
       totalPage={totalPage}
       getPage={handlePageChange}
-      action={(movie) => <AddToMustWatchIcon movie={movie} />}
+      action={(movie) => <AddToMustWatch movie={movie} />}
     />
   );
 };
