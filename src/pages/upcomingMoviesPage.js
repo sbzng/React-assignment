@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import PageTemplate from "../components/templateMovieListPage";
 import { getUpcomingMovies } from "../api/tmdb-api";
-import AddToMustWatchIcon from "../components/cardIcons/addToMustWatchIcon";
+import AddToMustWatch from "../components/cardIcons/addToMustWatch";
 import { useQuery } from "react-query";
 import Spinner from "../components/spinner";
 
@@ -33,7 +33,7 @@ const UpcomingMoviesPage = () => {
       page={page} 
       totalPage={totalPage}
       getPage={handlePageChange}
-      action={(movie) => <AddToMustWatchIcon movie={movie} />}
+      action={(movie) => <AddToMustWatch movie={movie} />}
     />
   );
 };

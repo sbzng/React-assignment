@@ -1,88 +1,48 @@
-import React, { useContext  } from "react";
-import Card from "@mui/material/Card";
-import CardActions from "@mui/material/CardActions";
-import CardContent from "@mui/material/CardContent";
-import CardMedia from "@mui/material/CardMedia";
-import CardHeader from "@mui/material/CardHeader";
-import Button from "@mui/material/Button";
-import Typography from "@mui/material/Typography";
+import React, { useContext } from "react";
+import { MoviesContext } from "../../contexts/moviesContext";
+import { Card, CardMedia, CardContent, CardActions, Typography, Avatar, Grid, Button, Box } from "@mui/material";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import CalendarIcon from "@mui/icons-material/CalendarTodayTwoTone";
 import StarRateIcon from "@mui/icons-material/StarRate";
-import IconButton from "@mui/material/IconButton";
-import Grid from "@mui/material/Grid";
-import img from '../../images/film-poster-placeholder.png'
+import MustWatchIcon from "@mui/icons-material/PlaylistAddCheck";
 import { Link } from "react-router-dom";
-import Avatar from '@mui/material/Avatar';
-import { MoviesContext } from "../../contexts/moviesContext";
+import placeholderImg from "../../images/film-poster-placeholder.png";
 
 export default function MovieCard({ movie, action }) {
-  const { favorites, addToFavorites } = useContext(MoviesContext);
+  const { favorites, mustWatch } = useContext(MoviesContext);
 
-  if (favorites.find((id) => id === movie.id)) {
-    movie.favorite = true;
-  } else {
-    movie.favorite = false
-  }
-
-  const handleAddToFavorite = (e) => {
-    e.preventDefault();
-    addToFavorites(movie);
-  };
-
+  const isFavorite = favorites.includes(movie.id);
+  const isMustWatch = mustWatch.includes(movie.id);
 
   return (
     <Card sx={{ maxWidth: 345 }}>
-
-      <CardHeader
-        avatar={
-          movie.favorite ? (
-            <Avatar sx={{ backgroundColor: 'red' }}>
-              <FavoriteIcon />
-            </Avatar>
-          ) : null
-        }
-        title={
-          <Typography variant="h5" component="p">
-            {movie.title}{" "}
-          </Typography>
-        }
-      />
-
+      <Box sx={{ display: 'flex', alignItems: 'center', p: 2 }}>
+        {isFavorite && <Avatar sx={{ bgcolor: "red" }}><FavoriteIcon /></Avatar>}
+        {isMustWatch && <Avatar sx={{ bgcolor: "green" }}><MustWatchIcon /></Avatar>}
+        <Typography variant="h5" sx={{ ml: 2 }}>{movie.title}</Typography>
+      </Box>
       <CardMedia
+        component="img"
         sx={{ height: 500 }}
-        image={
-          movie.poster_path
-            ? `https://image.tmdb.org/t/p/w500/${movie.poster_path}`
-            : img
-        }
+        image={movie.poster_path ? `https://image.tmdb.org/t/p/w500/${movie.poster_path}` : placeholderImg}
+        alt={movie.title}
       />
       <CardContent>
-        <Grid container>
-          <Grid item xs={6}>
-            <Typography variant="h6" component="p">
-              <CalendarIcon fontSize="small" />
-              {movie.release_date}
-            </Typography>
-          </Grid>
-          <Grid item xs={6}>
-            <Typography variant="h6" component="p">
-              <StarRateIcon fontSize="small" />
-              {"  "} {movie.vote_average}{" "}
-            </Typography>
-          </Grid>
+        <Grid container justifyContent="space-between">
+          <Typography variant="h6">
+            <CalendarIcon fontSize="small" /> {movie.release_date}
+          </Typography>
+          <Typography variant="h6">
+            <StarRateIcon fontSize="small" /> {movie.vote_average}
+          </Typography>
         </Grid>
       </CardContent>
-
-      <CardActions disableSpacing>
+      <CardActions>
         {action(movie)}
         <Link to={`/movies/${movie.id}`}>
-          <Button variant="outlined" size="medium" color="primary">
-            More Info ...
-          </Button>
+          <Button variant="outlined" color="primary">More Info ...</Button>
         </Link>
       </CardActions>
-      
     </Card>
   );
-};
+}
