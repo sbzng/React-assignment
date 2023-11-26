@@ -30,8 +30,7 @@ const UpcomingMoviesPage = (props) => {
     return <h1>{error.message}</h1>
   }  
   const movies = data.results;
-
-  // Redundant, but necessary to avoid app crashing.
+ 
   const mustwatch = movies.filter(m => m.watch)
   localStorage.setItem('mustwatch', JSON.stringify(mustwatch))
   const addToMustWatch = (movieId) => true 

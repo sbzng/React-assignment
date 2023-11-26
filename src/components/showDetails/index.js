@@ -15,7 +15,7 @@ const root = {
 };
 const chip = { margin: 0.5 };
 
-const ShowDetails = ({ show }) => {  // Don't miss this!
+const ShowDetails = ({ show }) => {  
   const [drawerOpen, setDrawerOpen] = useState(false);
 
   return (

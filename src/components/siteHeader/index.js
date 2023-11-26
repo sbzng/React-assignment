@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import AppBar from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
@@ -46,7 +46,7 @@ const SiteHeader = () => {
   const searchSubMenuOptions = [
     { label: "Movies", path: "/movies/search" },
     { label: "Actors", path: "/actors/search" },
-    { label: "TV ", path: "/shows/search" }
+    { label: "TV Shows", path: "/shows/search" }
   ];
 
   const handleMenuSelect = (pageURL) => {
@@ -161,4 +161,3 @@ const SiteHeader = () => {
 };
 
 export default SiteHeader;
-
