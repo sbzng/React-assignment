@@ -1,0 +1,17 @@
+.scrollable-cast-list {
+    display: flex;
+    overflow-x: auto;
+    padding: 10px 0;
+  }
+  
+  .cast-member {
+    flex: 0 0 auto;
+    margin-right: 10px;
+    text-align: center;
+  }
+  
+  .cast-member img {
+    width: 100px;
+    height: 150px;
+    object-fit: cover;
+  }

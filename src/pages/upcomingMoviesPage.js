@@ -1,41 +1,69 @@
-import React, { useState } from "react";
-import PageTemplate from "../components/templateMovieListPage";
+import React, { useState, useContext } from "react";
+import AuthContext from "../AuthContext";
+import { Navigate } from 'react-router-dom';
 import { getUpcomingMovies } from "../api/tmdb-api";
-import AddToMustWatch from "../components/cardIcons/addToMustWatch";
-import { useQuery } from "react-query";
-import Spinner from "../components/spinner";
+import PageTemplate from '../components/templateMovieListPage';
+import { useQuery } from 'react-query';
+import Spinner from '../components/spinner';
+import Pagination from '@mui/material/Pagination';
+import AddToFavoritesIcon from '../components/cardIcons/addToFavorites'
+import SiteHeader from './../components/siteHeader'
 
-const UpcomingMoviesPage = () => {
-  const [ page, setPage] = useState(1); 
+const UpcomingMoviesPage = (props) => {
 
-  const fetchUpcomingMovies = () => getUpcomingMovies( page);
-  const movieQuery = useQuery(['upcoming',  page], fetchUpcomingMovies);
+  const { user } = useContext(AuthContext);
 
-  if (movieQuery.isLoading) {
-    return <Spinner />;
-  }
+  const [activePage, setActivePage] = useState(1);
 
-  if (movieQuery.isError) {
-    return <h1>Error: {movieQuery.error.message}</h1>;
-  }
-
-  const movies = movieQuery.data.results;
-  const totalPage = Math.min(movieQuery.data.total_pages, 500);
-
-  const handlePageChange = (page) => {
-    setPage(page);  
+  const handleChange = (event, value) => {
+    setActivePage(value);
+    console.log(value)
   };
 
+  const {  data, error, isLoading, isError }  = useQuery(['upcoming', activePage], () => getUpcomingMovies(activePage), { keepPreviousData: true })
+
+  if (isLoading) {
+    return <Spinner />
+  }
+
+  if (isError) {
+    return <h1>{error.message}</h1>
+  }  
+  const movies = data.results;
+
+  // Redundant, but necessary to avoid app crashing.
+  const mustwatch = movies.filter(m => m.watch)
+  localStorage.setItem('mustwatch', JSON.stringify(mustwatch))
+  const addToMustWatch = (movieId) => true 
+  console.log(mustwatch)
+
+  if (!user) {
+    return <Navigate replace to="/login" />;
+}
+
   return (
+    <div className="upcomingpage">
+      <SiteHeader />
     <PageTemplate
       title="Upcoming Movies"
       movies={movies}
-      page={page} 
-      totalPage={totalPage}
-      getPage={handlePageChange}
-      action={(movie) => <AddToMustWatch movie={movie} />}
+      action={(movie) => {
+        return <AddToFavoritesIcon movie={movie} />
+      }}
     />
-  );
-};
+    <Pagination
+    count="100"
+    variant='outlined'
+    color='primary'
+    shape="rounded"
+    showFirstButton 
+    showLastButton
+    className='pagination'
+    page={activePage}
+    onChange={handleChange}
+  />
+  </div>
+);
 
+};
 export default UpcomingMoviesPage;

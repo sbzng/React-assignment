@@ -8,8 +8,7 @@ import { useQuery } from "react-query";
 import Spinner from '../spinner'
 
 const TemplateMoviePage = ({ movie, children }) => {
-
-    const { data , error, isLoading, isError } = useQuery(
+  const { data , error, isLoading, isError } = useQuery(
     ["images", { id: movie.id }],
     getMovieImages
   );
@@ -22,7 +21,7 @@ const TemplateMoviePage = ({ movie, children }) => {
     return <h1>{error.message}</h1>;
   }
   const images = data.posters 
-  
+
   return (
     <>
       <MovieHeader movie={movie} />

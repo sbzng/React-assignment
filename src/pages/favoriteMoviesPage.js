@@ -1,53 +1,64 @@
-import React, { useState, useContext, useEffect } from "react";
+import React, { useContext } from "react";
+import AuthContext from "../AuthContext";
+import { Navigate } from 'react-router-dom';
 import PageTemplate from "../components/templateMovieListPage";
 import { MoviesContext } from "../contexts/moviesContext";
 import { useQueries } from "react-query";
 import { getMovie } from "../api/tmdb-api";
-import Spinner from "../components/spinner";
+import Spinner from '../components/spinner'
 import RemoveFromFavorites from "../components/cardIcons/removeFromFavorites";
 import WriteReview from "../components/cardIcons/writeReview";
+import SiteHeader from './../components/siteHeader'
 
 const FavoriteMoviesPage = () => {
-  const [currentPage, setCurrentPage] = useState(1);
-  const [loading, setLoading] = useState(true);
-  const { favorites } = useContext(MoviesContext);
 
-  const movieQueries = favorites.map((id) => ({
-    queryKey: ['movie', { id }],
-    queryFn: getMovie,
-  }));
+  const { user } = useContext(AuthContext);
 
-  const results = useQueries(movieQueries);
-  const isLoading = results.some((query) => query.isLoading);
+  const {favorites: movieIds } = useContext(MoviesContext);
 
-  useEffect(() => {
-    setLoading(isLoading);
-  }, [isLoading]);
+  // Create an array of queries and run in parallel.
+  const favoriteMovieQueries = useQueries(
+    movieIds.map((movieId) => {
+      return {
+        queryKey: ["movie", { id: movieId }],
+        queryFn: getMovie,
+      };
+    })
+  );
+  // Check if any of the parallel queries is still loading.
+  const isLoading = favoriteMovieQueries.find((m) => m.isLoading === true);
 
-  const movies = results.map((query) => query.data).filter(Boolean);
-
-  const handlePageChange = (event, value) => {
-    setCurrentPage(value);
-  };
-
-  if (loading) {
+  if (isLoading) {
     return <Spinner />;
   }
 
+  const movies = favoriteMovieQueries.map((q) => {
+    q.data.genre_ids = q.data.genres.map(g => g.id)
+    return q.data
+  });
+
+  const toDo = () => true;
+
+  if (!user) {
+    return <Navigate replace to="/login" />;
+}
+
   return (
+    <div>
+    <SiteHeader />
     <PageTemplate
       title="Favorite Movies"
       movies={movies}
-      page={currentPage}
-      totalPage={1} 
-      getPage={handlePageChange}
-      action={(movie) => (
-        <>
-          <RemoveFromFavorites movie={movie} />
-          <WriteReview movie={movie} />
-        </>
-      )}
+      action={(movie) => {
+        return (
+          <>
+            <RemoveFromFavorites movie={movie} />
+            <WriteReview movie={movie} />
+          </>
+        );
+      }}
     />
+    </div>
   );
 };
 

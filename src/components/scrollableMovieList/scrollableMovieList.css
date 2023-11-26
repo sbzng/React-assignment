@@ -1,0 +1,17 @@
+.scrollable-movie-list {
+    display: flex;
+    overflow-x: auto;
+    padding: 10px 0;
+  }
+  
+  .movie-member {
+    flex: 0 0 auto;
+    margin-right: 10px;
+    text-align: center;
+  }
+  
+  .movie-member img {
+    width: 100px;
+    height: 150px;
+    object-fit: cover;
+  }

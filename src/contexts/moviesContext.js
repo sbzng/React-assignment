@@ -3,48 +3,52 @@ import React, { useState } from "react";
 export const MoviesContext = React.createContext(null);
 
 const MoviesContextProvider = (props) => {
-  const [favorites, setFavorites] = useState([]);
-  const [myReviews, setMyReviews] = useState({});
-  const [mustWatch, setMustWatch] = useState([]);
-
-  const addToFavorites = (movie) => {
-    let newFavorites = [];
-    if (!favorites.includes(movie.id)) {
-      newFavorites = [...favorites, movie.id];
-    } else {
-      newFavorites = [...favorites];
-    }
-    setFavorites(newFavorites);
-  };
-
-  const addReview = (movie, review) => {
-    setMyReviews({ ...myReviews, [movie.id]: review });
-  };
-
-  const removeFromFavorites = (movie) => {
-    setFavorites(favorites.filter((mId) => mId !== movie.id));
-  };
+  const [favorites, setFavorites] = useState( [] )
+  const [mustwatch, setMustWatch] = useState( [] )
+  const [myReviews, setMyReviews] = useState( {} ) 
 
   const addToMustWatch = (movie) => {
     let newMustWatch = [];
-    if (!mustWatch.includes(movie.id)) {
-      newMustWatch = [...mustWatch, movie.id];
-    } else {
-      newMustWatch = [...mustWatch];
+    if (!mustwatch.includes(movie.id)){
+      newMustWatch = [...mustwatch, movie.id];
     }
-    setMustWatch(newMustWatch);
-    console.log('must watch: ' + mustWatch);
+    else{
+      newMustWatch = [...mustwatch];
+    }
+    setMustWatch(newMustWatch)
+  };
+
+  const addToFavorites = (movie) => {
+    let newFavorites = [];
+    if (!favorites.includes(movie.id)){
+      newFavorites = [...favorites, movie.id];
+    }
+    else{
+      newFavorites = [...favorites];
+    }
+    setFavorites(newFavorites)
+  };
+
+  const addReview = (movie, review) => {
+    setMyReviews( {...myReviews, [movie.id]: review } )
+  };
+
+  // We will use this function in a later section
+  const removeFromFavorites = (movie) => {
+    setFavorites( favorites.filter(
+      (mId) => mId !== movie.id
+    ) )
   };
 
   return (
     <MoviesContext.Provider
       value={{
+        mustwatch, 
+        addToMustWatch,
         favorites,
-        mustWatch,
         addToFavorites,
         removeFromFavorites,
         addReview,
-        addToMustWatch,
       }}
     >
       {props.children}

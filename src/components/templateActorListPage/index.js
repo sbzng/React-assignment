@@ -1,36 +1,30 @@
 import React, { useState } from "react";
 import Header from "../headerMovieList";
 import ActorList from "../actorList";
-import { Grid } from "@mui/material";
+import Grid from "@mui/material/Grid";
 
-function PerformerOverview({ performerList, pageTitle, selectAction }) {
-  const [searchTerm, setSearchTerm] = useState("");
-  const [selectedGenre, setSelectedGenre] = useState(0);
-  const genreId = Number(selectedGenre);
+function ActorListPageTemplate({ actors, name, action }) {
+  const [nameFilter, setNameFilter] = useState("");
+  const [genreFilter, setGenreFilter] = useState("0");
+  const genreId = Number(genreFilter);
 
-  let filteredPerformers = performerList
-    ?.filter((performer) => {
-      return performer.name.toLowerCase().includes(searchTerm.toLowerCase());
+  let displayedActors = actors
+    ?.filter((a) => {
+      return a.name.toLowerCase().search(nameFilter.toLowerCase()) !== -1;
     })
-    ?.filter((performer) => {
-      return genreId > 0 ? performer.genre_ids.includes(genreId) : true;
+    ?.filter((a) => {
+      return genreId > 0 ? a.genre_ids.includes(genreId) : true;
     });
 
-  const handleFilterChange = (filterType, value) => {
-    if (filterType === "search") setSearchTerm(value);
-    else setSelectedGenre(value);
-  };
-
   return (
-    <Grid container spacing={2} sx={{ padding: '20px' }}>
+    <Grid container sx={{ padding: '20px' }}>
       <Grid item xs={12}>
-        <Header title={pageTitle} onFilterChange={handleFilterChange} />
+        <Header name={name} />
       </Grid>
-      <Grid item xs={12}>
-        <ActorList actors={filteredPerformers} onActorSelect={selectAction}></ActorList>
+      <Grid item container spacing={5}>
+        <ActorList action={action} actors={displayedActors}></ActorList>
       </Grid>
     </Grid>
   );
 }
-
-export default PerformerOverview;
+export default ActorListPageTemplate;

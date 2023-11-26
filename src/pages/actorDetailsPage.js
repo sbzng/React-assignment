@@ -1,38 +1,45 @@
-import React from "react";
+import React from 'react';
 import { useParams } from 'react-router-dom';
-import ActorDetails from "../components/actorDetails";
-import PageTemplate from "../components/templateActorPage";
-import { getActorDetails, getActorMovieCredits } from '../api/tmdb-api';
-import { useQuery } from "react-query";
+import ActorDetails from '../components/actorDetails';
+import PageTemplate from '../components/templateActorPage';
+import { getActor, getActorMovieCredits } from '../api/tmdb-api';
+import { useQuery } from 'react-query';
 import Spinner from '../components/spinner';
+import SiteHeader from './../components/siteHeader';
 
-const ActorDetailsPage = () => {
+const ActorPage = () => {
   const { id } = useParams();
-  
-  const actorDetailsResult = useQuery(["actor", { id }], getActorDetails);
-  const actorMoviesResult = useQuery(["cast", { id }], getActorMovieCredits);
 
-  if (actorDetailsResult.isLoading || actorMoviesResult.isLoading) {
+  const { data: actor, error: actorError, isLoading: isActorLoading, isError: isActorError } = useQuery(
+    ['actor', { id }],
+    getActor
+  );
+
+  const { data: cast, error: castError, isLoading: isCastLoading, isError: isCastError } = useQuery(
+    ['cast', { id }],
+    getActorMovieCredits
+  );
+
+  if (isActorLoading || isCastLoading) {
     return <Spinner />;
   }
 
-  if (actorDetailsResult.isError) {
-    return <h1>Error: {actorDetailsResult.error.message}</h1>;
+  if (isActorError) {
+    return <h1>Error: {actorError.message}</h1>;
   }
 
-  if (actorMoviesResult.isError) {
-    return <h1>Error: {actorMoviesResult.error.message}</h1>;
+  if (isCastError) {
+    return <h1>Error: {castError.message}</h1>;
   }
 
   return (
-    <div>
-      {actorDetailsResult.data && (
-        <PageTemplate actor={actorDetailsResult.data}>
-          <ActorDetails actor={actorDetailsResult.data} cast={actorMoviesResult.data} />
-        </PageTemplate>
-      )}
-    </div>
+    <>
+    <SiteHeader />
+    <PageTemplate actor={actor}>
+      <ActorDetails actor={actor} cast={cast} />
+    </PageTemplate>
+    </>
   );
 };
 
-export default ActorDetailsPage;
+export default ActorPage;

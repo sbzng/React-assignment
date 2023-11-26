@@ -61,13 +61,9 @@ const styles = {
 };
 
 const ReviewForm = ({ movie }) => {
-
   const context = useContext(MoviesContext);
-
   const [rating, setRating] = useState(3);
-
-  const [open, setOpen] = useState(false);
-
+  const [open, setOpen] = useState(false); 
   const navigate = useNavigate();
 
   const defaultValues = {
@@ -88,21 +84,18 @@ const ReviewForm = ({ movie }) => {
     setRating(event.target.value);
   };
 
-
-
-  const onSubmit = (review) => {
-    review.movieId = movie.id;
-    review.rating = rating;
-    console.log(review);
-    context.addReview(movie, review);
-    setOpen(true); // NEW
-  };
-
   const handleSnackClose = (event) => {
     setOpen(false);
     navigate("/movies/favorites");
   };
 
+  const onSubmit = (review) => {
+    review.movieId = movie.id;
+    review.rating = rating;
+    // console.log(review);
+    context.addReview(movie, review);
+    setOpen(true); // NEW
+  };
 
   return (
     <Box component="div" sx={styles.root}>
@@ -126,7 +119,7 @@ const ReviewForm = ({ movie }) => {
           </Typography>
         </MuiAlert>
       </Snackbar>
-
+      
       <form sx={styles.form} onSubmit={handleSubmit(onSubmit)} noValidate>
         <Controller
           name="author"

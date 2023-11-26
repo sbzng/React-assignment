@@ -1,38 +1,46 @@
-import React from "react";
+import React, { useState, useContext } from "react";
+import AuthContext from "../AuthContext";
+import { Navigate } from 'react-router-dom';
 import { useParams } from 'react-router-dom';
-import PageTemplate from "../components/templateMoviePage";
 import MovieDetails from "../components/movieDetails/";
-import { getMovie, getMovieCredits, getSimilarMovies } from '../api/tmdb-api'
+import PageTemplate from "../components/templateMoviePage";
+import { getMovie } from '../api/tmdb-api'
 import { useQuery } from "react-query";
 import Spinner from '../components/spinner'
+import SiteHeader from './../components/siteHeader'
 
-const MoviePage = () => {
+const MoviePage = (props) => {
+  const { user } = useContext(AuthContext);
   const { id } = useParams();
-  
-  const movieQuery = useQuery(["movie", { id }], getMovie);
-  const actorsQuery = useQuery(["actors", { id }], getMovieCredits);
-  const similarMoviesQuery = useQuery(["similarMovies", { id }], getSimilarMovies);
+  const { data: movie, error, isLoading, isError } = useQuery(
+    ["movie", { id: id }],
+    getMovie
+  );
 
-  if (movieQuery.isLoading || actorsQuery.isLoading || similarMoviesQuery.isLoading) {
+  if (isLoading) {
     return <Spinner />;
   }
 
-  if (movieQuery.isError) {
-    return <h1>Error: {movieQuery.error.message}</h1>;
+  if (isError) {
+    return <h1>{error.message}</h1>;
   }
 
-  if (actorsQuery.isError) {
-    return <h1>Error: {actorsQuery.error.message}</h1>;
-  }
-
-  if (similarMoviesQuery.isError) {
-    return <h1>Error: {similarMoviesQuery.error.message}</h1>;
-  }
+  if (!user) {
+    return <Navigate replace to="/login" />;
+}
 
   return (
-    <PageTemplate movie={movieQuery.data}>
-      <MovieDetails movie={movieQuery.data} actors={actorsQuery.data} similarMovies={similarMoviesQuery.data} />
-    </PageTemplate>
+    <>
+      {movie ? (
+        <><SiteHeader />
+          <PageTemplate movie={movie}>
+            <MovieDetails movie={movie} />
+          </PageTemplate>
+        </>
+      ) : (
+        <p>Waiting for movie details</p>
+      )}
+    </>
   );
 };
 
